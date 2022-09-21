@@ -1,10 +1,13 @@
 #include <iostream>
 #include "./Constants.h"
 #include "./Game.h"
+#include "scene.h"
+
 using namespace std;
 
 SDL_Renderer* Game::renderer;
 SDL_Event Game::event;
+
 
 
 Game::Game(){
@@ -47,6 +50,10 @@ void Game::Initialize(int width, int height) {
     }
 
     isRunning = true;
+
+    std::string scene_name = "emily scene";
+    scene my_scene(scene_name);
+
     return;
 }
 
