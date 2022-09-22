@@ -1,7 +1,6 @@
 #include <iostream>
-#include "./game.h"
-#include "./constants.h"
-using namespace std;
+#include "./Game.h"
+#include "./Constants.h"
 
 int main(int argc, char *args[]) {
     Game game;

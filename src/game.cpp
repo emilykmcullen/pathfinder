@@ -1,14 +1,10 @@
 #include <iostream>
 #include "./Constants.h"
 #include "./Game.h"
-#include "scene.h"
-
-using namespace std;
+#include "Scene.h"
 
 SDL_Renderer* Game::renderer;
 SDL_Event Game::event;
-
-
 
 Game::Game(){
     this->isRunning =false;
@@ -25,11 +21,11 @@ bool Game::IsRunning() const {
 
 void Game::Initialize(int width, int height) {
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0){
-        cerr << "Error initializing SDL" << endl;
+        std::cerr << "Error initializing SDL" << std::endl;
         return;
     }
     if (TTF_Init() !=0) {
-        cerr << "Error initializing SDL TTF" <<endl;
+        std::cerr << "Error initializing SDL TTF" << std::endl;
     }
     window = SDL_CreateWindow(
         NULL,
@@ -40,19 +36,19 @@ void Game::Initialize(int width, int height) {
         SDL_WINDOW_BORDERLESS
     );
     if(!window){
-        cerr << "Error creating SDL window." << endl;
+        std::cerr << "Error creating SDL window." << std::endl;
         return;
     }
     renderer = SDL_CreateRenderer(window, -1, 0);
     if(!renderer){
-        cerr << "Error creating SDL renderer." << endl;
+        std::cerr << "Error creating SDL renderer." << std::endl;
         return;
     }
 
     isRunning = true;
 
-    std::string scene_name = "emily scene";
-    scene my_scene(scene_name);
+    Scene my_scene("emily sceene");
+    my_scene.PrintBoxInfo();
 
     return;
 }
