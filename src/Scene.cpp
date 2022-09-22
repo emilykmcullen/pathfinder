@@ -15,7 +15,7 @@ Scene::Scene(std::string name) : name(name)
         boxes.emplace(box->id, box);
 
         //This will round any float values, but that's what we want. We just want an approximate value to use as the key
-        int midX = currentX + (BOX_WIDTH/2);
+        int midX = currentX + (BOX_WIDTH/2); 
         int midY = currentY + (BOX_HEIGHT/2);
         int midpoint = (midX * 1000) + midY; //Gives us the key to use
         boxes_by_midpoint.emplace(midpoint, i);

@@ -40,7 +40,7 @@ class Scene
 {
     private:
         std::string name;
-        std::unordered_map<int, scene_box*> boxes;
+        
         std::unordered_map<int, int> boxes_by_midpoint;
 
         // Find the boxes to the N/E/S/W of a particular box
@@ -54,6 +54,9 @@ class Scene
     public:
         Scene(std::string name);
         void PrintBoxInfo();
+        void DrawBoxPoints();
+        //move back to private at some point
+        std::unordered_map<int, scene_box*> boxes;
 
 
     

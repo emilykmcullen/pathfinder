@@ -4,12 +4,23 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include "Scene.h"
 
 
 class Game {
     private:
         bool isRunning;
         SDL_Window *window;
+        Scene* my_scene;
+        
+        //for boxes
+        uint32_t* color_buffer = NULL;
+        SDL_Texture* color_buffer_texture = NULL;
+        void RenderColorBuffer();
+        void ClearColorBuffer(uint32_t color);
+        void DrawRect(int x, int y, int width, int height, uint32_t color);
+        void DrawSceneBoxes();
+        //
 
     public:
         Game();
