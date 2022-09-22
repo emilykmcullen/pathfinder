@@ -42,6 +42,9 @@ class Scene
         std::string name;
         std::unordered_map<int, scene_box*> boxes;
         std::unordered_map<int, int> boxes_by_midpoint;
+
+        // Find the boxes to the N/E/S/W of a particular box
+        // Enter the originX and originY of the box      
         int FindNorthBox(float x, float y);
         int FindSouthBox(float x, float y);
         int FindEastBox(float x, float y);
