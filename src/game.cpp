@@ -50,7 +50,7 @@ void Game::Initialize(int width, int height) {
     color_buffer = (uint32_t*)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH, WINDOW_HEIGHT);
     my_scene = new Scene("emily sceene");
-    my_scene->PrintBoxInfo();
+    //my_scene->PrintBoxInfo();
 
     return;
 }
@@ -112,6 +112,10 @@ void Game::ProcessInput(){
             if (event.key.keysym.sym == SDLK_ESCAPE){
                 isRunning =false;
             }
+        }
+        case SDL_MOUSEBUTTONDOWN: 
+        {
+            my_scene->FindCurrentBoxFromCoord(event.button.x, event.button.y);
         }
         default: {
             break;

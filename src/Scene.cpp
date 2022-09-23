@@ -3,6 +3,13 @@
 
 Scene::Scene(std::string name) : name(name)
 {
+    if (WINDOW_WIDTH % BOXES_PER_ROW_AND_COLUMN != 0 || WINDOW_HEIGHT % BOXES_PER_ROW_AND_COLUMN != 0)
+    {
+        // We want the boxes to have non-decimal origins so if they don't divide into whole numbers, finish the program
+        // TO DO: stop program execution here
+        printf("ERROR!!! BOXES DON'T DIVIDE INTO THE WINDOW CLEANLY!\n");
+    }
+
     //Initialize boxes
     int total_boxes = BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN;
 
@@ -17,18 +24,23 @@ Scene::Scene(std::string name) : name(name)
         //This will round any float values, but that's what we want. We just want an approximate value to use as the key
         int midX = currentX + (BOX_WIDTH/2); 
         int midY = currentY + (BOX_HEIGHT/2);
-        int midpoint = (midX * 1000) + midY; //Gives us the key to use
+        int midpoint = (midX * BOX_MIDPOINT_MULTIPLIER) + midY; //Gives us the key to use
         boxes_by_midpoint.emplace(midpoint, i);
+        printf("BOXID: %i, MIDPOINT: %i\n", i, midpoint);
 
         currentX += BOX_WIDTH;
-        if (currentX == WINDOW_WIDTH)
+        // Previously this checked if currentX == WINDOW_WIDTH, but it might not always exactly equal it
+        // So just to be sure changed it to near enough to WINDOW_WIDTH
+        if (currentX >= WINDOW_WIDTH - (BOX_WIDTH/2))
         {
             currentX = 0;
             currentY += BOX_HEIGHT;
         }
-        if (currentY == WINDOW_HEIGHT)
+        // Previously this checked if currentY == WINDOW_HEIGHT, but it might not always exactly equal it
+        // So just to be sure changed it to near enough to WINDOW_HEIGHT
+        if (currentY >= WINDOW_HEIGHT - (BOX_HEIGHT/2))
         {
-            printf("REACHED WINDOW WIDTH, BOXES COMPLETED %i\n", i);
+            printf("REACHED WINDOW END, BOXES COMPLETED %i\n", i);
             //After all boxes are completed, go through each box and find it's nesw and assign them
             break;
         }
@@ -54,9 +66,9 @@ void Scene::PrintBoxInfo()
     }
 }
 
-int Scene::FindNorthBox(float originX, float originY)
+int Scene::FindNorthBox(int originX, int originY)
 {
-    float northOriginY = originY - BOX_HEIGHT;
+    int northOriginY = originY - BOX_HEIGHT;
 
     int midpoint = FindMidpoint(originX, northOriginY);  
 
@@ -70,9 +82,9 @@ int Scene::FindNorthBox(float originX, float originY)
     }
 }
 
-int Scene::FindEastBox(float originX, float originY)
+int Scene::FindEastBox(int originX, int originY)
 {
-    float EastOriginX = originX + BOX_WIDTH;
+    int EastOriginX = originX + BOX_WIDTH;
 
     int midpoint = FindMidpoint(EastOriginX, originY);  
 
@@ -86,9 +98,9 @@ int Scene::FindEastBox(float originX, float originY)
     }
 }
 
-int Scene::FindSouthBox(float originX, float originY)
+int Scene::FindSouthBox(int originX, int originY)
 {
-    float southOriginY = originY + BOX_HEIGHT;
+    int southOriginY = originY + BOX_HEIGHT;
 
     int midpoint = FindMidpoint(originX, southOriginY);  
 
@@ -102,9 +114,9 @@ int Scene::FindSouthBox(float originX, float originY)
     }
 }
 
-int Scene::FindWestBox(float originX, float originY)
+int Scene::FindWestBox(int originX, int originY)
 {
-    float westOriginX = originX - BOX_WIDTH;
+    int westOriginX = originX - BOX_WIDTH;
 
     int midpoint = FindMidpoint(westOriginX, originY);  
 
@@ -118,10 +130,37 @@ int Scene::FindWestBox(float originX, float originY)
     }
 }
 
-int Scene::FindMidpoint(float originX, float originY)
+int Scene::FindMidpoint(int originX, int originY)
 {
+    // Will not find the exact midpoint, we just need an approx midpoint to use as a key
     int midX = originX + (BOX_WIDTH/2);
     int midY = originY + (BOX_HEIGHT/2);
     int midpoint = (midX * 1000) + midY;
     return midpoint;
 }
+
+
+int Scene::FindCurrentBoxFromCoord(int x, int y)
+{
+    if (x > WINDOW_WIDTH || x < 0 || y > WINDOW_HEIGHT || y < 0)
+    {
+        printf("Scene::FindCurrentBoxFromCoord - invalid coordinates %f, %f\n", x, y);
+        return -1;
+    }
+
+    // Round the x,y coords down to the nearest multiple of the box_width/height
+    // Separate statements because compiler was optimizing the div/mult out
+    // TO DO: IS THERE A BETTER WAY TO DO THIS
+    int dividedX = (x/BOX_WIDTH);
+    int originX = dividedX * BOX_WIDTH;
+    int dividedY = (y/BOX_HEIGHT);
+    int originY = dividedY *BOX_HEIGHT;
+
+    int midpoint = FindMidpoint(originX, originY);
+    int boxId = boxes_by_midpoint.at(midpoint);
+    printf("MOUSE CLICKED ON BOX: %i \n", boxId);
+    return boxId;
+
+    
+}
+

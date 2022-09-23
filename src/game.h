@@ -14,6 +14,7 @@ class Game {
         Scene* my_scene;
         
         //for boxes
+        // TO DO: tidy these up elsewhere
         uint32_t* color_buffer = NULL;
         SDL_Texture* color_buffer_texture = NULL;
         void RenderColorBuffer();

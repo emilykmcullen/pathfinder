@@ -45,18 +45,23 @@ class Scene
 
         // Find the boxes to the N/E/S/W of a particular box
         // Enter the originX and originY of the box      
-        int FindNorthBox(float x, float y);
-        int FindSouthBox(float x, float y);
-        int FindEastBox(float x, float y);
-        int FindWestBox(float x, float y);
-        int FindMidpoint(float x, float y);
+        int FindNorthBox(int x, int y);
+        int FindSouthBox(int x, int y);
+        int FindEastBox(int x, int y);
+        int FindWestBox(int x, int y);
+        int FindMidpoint(int originX, int originY);
+
 
     public:
         Scene(std::string name);
         void PrintBoxInfo();
         void DrawBoxPoints();
-        //move back to private at some point
+        // TO DO: move back to private at some point
         std::unordered_map<int, scene_box*> boxes;
+
+        // Enter the coordinates of a point in the window, return value is the current box id
+        // Coords can be floats, but we need them to be cast to ints here for the rounding calculation
+        int FindCurrentBoxFromCoord(int x, int y);
 
 
     
