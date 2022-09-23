@@ -22,7 +22,7 @@ So my solution for this was that if I can find the approx midpoint for each box 
 
 # :clapper: Day 1 - 3 progress clip! :clapper:
 
-![Video](./logvids/day1to3.gif)
+![Video](./logvids/day1to3vid.gif)
 
 **Next Steps**
 Over the next few days I want to:
