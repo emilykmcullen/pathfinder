@@ -22,7 +22,9 @@ So my solution for this was that if I can find the approx midpoint for each box 
 
 # :clapper: Day 1 - 3 progress clip! :clapper:
 
-<video src="https://youtu.be/6FJIjccYABc" width=180></video>
+
+https://user-images.githubusercontent.com/69171546/192028997-f0d52283-ecb2-42b2-a8d1-2f6e64637fef.mov
+
 
 **Next Steps**
 Over the next few days I want to:
