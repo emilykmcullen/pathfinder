@@ -32,7 +32,7 @@ void Game::Initialize(int width, int height) {
         SDL_WINDOWPOS_CENTERED,
         width,
         height,
-        SDL_WINDOW_BORDERLESS
+        SDL_WINDOW_SHOWN
     );
     if(!window){
         std::cerr << "Error creating SDL window." << std::endl;

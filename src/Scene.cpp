@@ -26,8 +26,7 @@ Scene::Scene(std::string name) : name(name)
         int midY = currentY + (BOX_HEIGHT/2);
         int midpoint = (midX * BOX_MIDPOINT_MULTIPLIER) + midY; //Gives us the key to use
         boxes_by_midpoint.emplace(midpoint, i);
-        printf("BOXID: %i, MIDPOINT: %i\n", i, midpoint);
-
+        
         currentX += BOX_WIDTH;
         // Previously this checked if currentX == WINDOW_WIDTH, but it might not always exactly equal it
         // So just to be sure changed it to near enough to WINDOW_WIDTH
@@ -154,7 +153,7 @@ int Scene::FindCurrentBoxFromCoord(int x, int y)
     int dividedX = (x/BOX_WIDTH);
     int originX = dividedX * BOX_WIDTH;
     int dividedY = (y/BOX_HEIGHT);
-    int originY = dividedY *BOX_HEIGHT;
+    int originY = dividedY * BOX_HEIGHT;
 
     int midpoint = FindMidpoint(originX, originY);
     int boxId = boxes_by_midpoint.at(midpoint);
