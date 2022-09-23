@@ -1,9 +1,9 @@
-# :green_circle: cute-game diary :green_circle:
+# :cupid: cute-game diary :cupid:
 ### Description
 I'm making a little game using C++ and SDL in my spare time (weekends and evenings after work), this is a sort of diary/log of things I add to it.
 
 
-### Day 1 - 3
+### :dizzy: Day 1 - 3 (21st - 23rd Sept) :dizzy:
 * Basic game loop stuff implemented (opening a window, processing input, update loop, rendering)
 * Created 'scenes' and 'boxes' to fill scenes (the boxes are to be used behind-the-scenes as walk boxes for the player etc)
 * Functionality to ensure a 'box' knows the box to it's north, east, south, west
@@ -11,7 +11,8 @@ I'm making a little game using C++ and SDL in my spare time (weekends and evenin
 * Functionality to colour the scene boxes (this is not for the game and is only useful for my debugging/testing purposes, also it's fun)
 * Can click in a box and find what the id of that box is
 
-**Looking up boxes by midpoint - why**
+### :dizzy: Looking up boxes by midpoint - why :dizzy:
+
 I know I need some way to find a box's id. 
 Two example usages I can think of for why I need this: 
 * If the user clicks in a spot in the game window, I want to know what 'box' those screen coords are within so I can check info about the box (eg. is that box walkable? etc.)
