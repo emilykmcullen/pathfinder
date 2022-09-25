@@ -22,7 +22,9 @@ So my solution for this was that if I can find the approx midpoint for each box 
 
 # :clapper: Day 1 - 3 progress clip! :clapper:
 
-<video src="https://youtu.be/6FJIjccYABc" width=180></video>
+
+https://user-images.githubusercontent.com/69171546/192028997-f0d52283-ecb2-42b2-a8d1-2f6e64637fef.mov
+
 
 **Next Steps**
 Over the next few days I want to:
@@ -32,6 +34,7 @@ Over the next few days I want to:
 * Find out if that square is walkable
 * If it is walkable, find the shortest path to that square
 * Make the player 'walk' that path to the destination square
+
 
 ### :hedgehog: Day 4 (25th Sept) :hedgehog:
 I need to create some sort of pathfinder for my player to be able to click in a destination box and find a path to that box.
