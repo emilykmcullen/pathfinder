@@ -1,9 +1,9 @@
-# :cupid: cute-game diary :cupid:
+# :worm: cute-game diary :worm:
 ### Description
 I'm making a little game using C++ and SDL in my spare time (weekends and evenings after work), this is a sort of diary/log of things I add to it.
 
 
-### :dizzy: Day 1 - 3 (21st - 23rd Sept) :dizzy:
+### :hedgehog: Day 1 - 3 (21st - 23rd Sept) :hedgehog:
 * Basic game loop stuff implemented (opening a window, processing input, update loop, rendering)
 * Created 'scenes' and 'boxes' to fill scenes (the boxes are to be used behind-the-scenes as walk boxes for the player etc)
 * Functionality to ensure a 'box' knows the box to it's north, east, south, west
@@ -11,7 +11,7 @@ I'm making a little game using C++ and SDL in my spare time (weekends and evenin
 * Functionality to colour the scene boxes (this is not for the game and is only useful for my debugging/testing purposes, also it's fun)
 * Can click in a box and find what the id of that box is
 
-### :dizzy: Looking up boxes by midpoint - why :dizzy:
+### :hedgehog: Looking up boxes by midpoint - why :hedgehog:
 
 I know I need some way to find a box's id. 
 Two example usages I can think of for why I need this: 
@@ -32,3 +32,19 @@ Over the next few days I want to:
 * Find out if that square is walkable
 * If it is walkable, find the shortest path to that square
 * Make the player 'walk' that path to the destination square
+
+### :hedgehog: Day 4 (25th Sept) :hedgehog:
+I need to create some sort of pathfinder for my player to be able to click in a destination box and find a path to that box.
+I've never made a pathfinder before, I've heard about things such as A* and Dijkstra's pathfinding algorithm but I decided to try and work something out myself before researching better ways to do it, so that's what I spent the afternoon doing today. 
+What I did today:
+* Made a pathfinder that works but it's very messy and probably not very good, however I'm really happy I managed to get it working first without looking up how to do it!
+* The code is extremely messy, my next steps this week will be to clean this up
+* I have a 'list' class, which is more like 'PathfindingLinkedList' because it's not useable for anything else, however the C++ intellisense on VScode is terrible and it's too annoying to rename it right now
+* There are situations I haven't dealt with such as; if a destination value that doesn't exist is entered, and secondly, some boxes will be walkable and some not-walkable, I haven't taken this into consideration yet
+* Lots of other things are not really where they should be either, but I basically just wanted to get something working
+* Also not sure if I will clean it up or just get rid of it, as my solution is obviously quite crude and maybe now I have a solution I'll get rid of it and research into A* algorithm instead 
+
+**Next Steps**
+Over the next few days I want to:
+* Clean up my pathfinding code and/or implement A* pathfinding algorithm instead
+* Do the other steps in my previous next steps! 

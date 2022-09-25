@@ -36,6 +36,7 @@ class Game {
         void Update();
         void Render();
         void Destroy();
+        void Test();
 };
 
 #endif

@@ -18,7 +18,7 @@ Scene::Scene(std::string name) : name(name)
 
     for (int i = 0; i < total_boxes; i++)
     {
-        scene_box* box = new scene_box(i, 0, 0, 0, 0, walkable::NOT_WALKABLE, currentX + BOX_WIDTH + BOX_PADDING, currentX - BOX_PADDING, currentY + BOX_HEIGHT + BOX_PADDING, currentY - BOX_PADDING, currentX, currentY);
+        scene_box* box = new scene_box(i, 0, 0, 0, 0, walkable::NOT_WALKABLE, currentX + BOX_WIDTH + BOX_PADDING, currentX - BOX_PADDING, currentY + BOX_HEIGHT + BOX_PADDING, currentY - BOX_PADDING, currentX, currentY, searched::NOT_SEARCHED);
         boxes.emplace(box->id, box);
 
         //This will round any float values, but that's what we want. We just want an approximate value to use as the key
@@ -49,10 +49,16 @@ Scene::Scene(std::string name) : name(name)
     {   
         scene_box* box = boxes.at(i);
         //Find n,e,s,w of the current box
+        // TO DO: are the nesw needed now i have boxneighbours?
         box->n = FindNorthBox(box->originX, box->originY);
         box->e = FindEastBox(box->originX, box->originY);
         box->s = FindSouthBox(box->originX, box->originY);
         box->w = FindWestBox(box->originX, box->originY);
+        //Fill out the boxNeighbours array
+        box->boxNeighbours.push_back(box->n);
+        box->boxNeighbours.push_back(box->e);
+        box->boxNeighbours.push_back(box->s);
+        box->boxNeighbours.push_back(box->w);
     }
 }
 
@@ -161,5 +167,68 @@ int Scene::FindCurrentBoxFromCoord(int x, int y)
     return boxId;
 
     
+}
+
+node* Scene::FindPath(int startBoxId, int destinationBoxId)
+{
+    pathLinkedList = new list(startBoxId);
+    
+    //We are in our box
+    scene_box* box = boxes.at(startBoxId);
+
+    // We have our list and the first node is initialized
+    // Get the box neighbours and send that data to CreateChildren
+    node* currentNode = pathLinkedList->first;
+    std::vector<node*> childNodes = pathLinkedList->CreateChildren(box->boxNeighbours, *currentNode);
+    node* destination = pathLinkedList->CheckForDestination(childNodes, destinationBoxId);
+
+    if (destination != nullptr)
+    {
+        return destination;
+    }
+
+    
+    std::vector<std::vector<node*>> nodeListsToSearch = {};
+    for (auto& node1 : childNodes)
+    {
+        currentNode = node1;
+        box = boxes.at(currentNode->data);
+        std::vector<node*> nodeKids = pathLinkedList->CreateChildren(box->boxNeighbours, *currentNode);
+        destination = pathLinkedList->CheckForDestination(nodeKids, destinationBoxId);
+        if (destination != nullptr)
+        {
+           return destination;
+        }
+        nodeListsToSearch.push_back(nodeKids);
+    }
+
+    while (destination == nullptr)
+    {
+        std::vector<std::vector<node*>> nodeListsToSearch2 = {};
+
+
+        for (auto& list : nodeListsToSearch)
+        {
+            for (auto& node1 : list)
+            {
+                currentNode = node1;
+                box = boxes.at(currentNode->data);
+                std::vector<node*> nodeKids = pathLinkedList->CreateChildren(box->boxNeighbours, *currentNode);
+                destination = pathLinkedList->CheckForDestination(nodeKids, destinationBoxId);
+                if (destination != nullptr)
+                {
+                    return destination;
+                }
+                nodeListsToSearch2.push_back(nodeKids);
+                
+            }
+        }
+        nodeListsToSearch = nodeListsToSearch2;
+        nodeListsToSearch2.clear();
+        nodeListsToSearch2.shrink_to_fit();
+
+        
+    }
+    return destination;
 }
 

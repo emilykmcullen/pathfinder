@@ -50,9 +50,26 @@ void Game::Initialize(int width, int height) {
     color_buffer = (uint32_t*)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH, WINDOW_HEIGHT);
     my_scene = new Scene("emily sceene");
+    
+    
+
     //my_scene->PrintBoxInfo();
+    Test();
 
     return;
+}
+
+void Game::Test()
+{
+    node* currentNode = my_scene->FindPath(6, 10);
+
+    while(currentNode->parent != nullptr)
+    {
+        std::cout << currentNode->data << std::endl;
+        currentNode = currentNode->parent;
+    }
+    std::cout << currentNode->data << std::endl;
+
 }
 
 //for boxes
