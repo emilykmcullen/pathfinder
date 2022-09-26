@@ -51,3 +51,8 @@ What I did today:
 Over the next few days I want to:
 * Clean up my pathfinding code and/or implement A* pathfinding algorithm instead
 * Do the other steps in my previous next steps! 
+
+### :hedgehog: Day 5 (26th Sept) :hedgehog:
+* Decided I'm going to keep going with my own pathfinder (instead of implementing a better way such as A*) for now, as it'll be a useful exercise - until at some point it's too slow or whatever and I need to implement a better way
+* Cleaned up a little (moved some of the code from Utils to Scene, renamed some things)
+* Had a quick go at deleting the tree nodes before dinner, seems to work for what I've tested so far but need to look into it/test more

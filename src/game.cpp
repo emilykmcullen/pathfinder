@@ -61,14 +61,18 @@ void Game::Initialize(int width, int height) {
 
 void Game::Test()
 {
-    node* currentNode = my_scene->FindPath(6, 10);
-
-    while(currentNode->parent != nullptr)
+    TreeNode* currentNode = my_scene->FindPath(4, 11);
+    if (currentNode != nullptr)
     {
+        while(currentNode->parent != nullptr)
+        {
+            std::cout << currentNode->data << std::endl;
+            currentNode = currentNode->parent;
+        }
         std::cout << currentNode->data << std::endl;
-        currentNode = currentNode->parent;
     }
-    std::cout << currentNode->data << std::endl;
+
+    my_scene->DeletePath();
 
 }
 
