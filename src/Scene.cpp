@@ -1,5 +1,10 @@
 #include "Scene.h"
 #include <iostream>
+#include <algorithm>
+
+bool operator<(const BoxDotProd &bdp1, const BoxDotProd &bdp2){
+    return bdp1.dotProduct > bdp2.dotProduct;
+}
 
 Scene::Scene(std::string name) : name(name)
 {
@@ -18,7 +23,7 @@ Scene::Scene(std::string name) : name(name)
 
     for (int i = 0; i < total_boxes; i++)
     {
-        scene_box* box = new scene_box(i, 0, 0, 0, 0, walkable::NOT_WALKABLE, currentX + BOX_WIDTH + BOX_PADDING, currentX - BOX_PADDING, currentY + BOX_HEIGHT + BOX_PADDING, currentY - BOX_PADDING, currentX, currentY);
+        scene_box* box = new scene_box(i, walkable::WALKABLE, currentX + BOX_WIDTH + BOX_PADDING, currentX - BOX_PADDING, currentY + BOX_HEIGHT + BOX_PADDING, currentY - BOX_PADDING, currentX, currentY);
         boxes.emplace(box->id, box);
 
         //This will round any float values, but that's what we want. We just want an approximate value to use as the key
@@ -47,18 +52,28 @@ Scene::Scene(std::string name) : name(name)
 
     for (int i = 0; i < total_boxes; i++)
     {   
-        scene_box* box = boxes.at(i);
+       scene_box* box = boxes.at(i);
         //Find n,e,s,w of the current box
         // TO DO: are the nesw needed now i have boxneighbours?
         box->north = FindNorthBox(box->originX, box->originY);
         box->east = FindEastBox(box->originX, box->originY);
         box->south = FindSouthBox(box->originX, box->originY);
         box->west = FindWestBox(box->originX, box->originY);
+
+        box->northEast = FindEastBox(box->originX, box->originY - BOX_HEIGHT);
+        box->southEast = FindEastBox(box->originX, box->originY + BOX_HEIGHT);
+        box->southWest = FindWestBox(box->originX, box->originY + BOX_HEIGHT);
+        box->northWest = FindWestBox(box->originX, box->originY - BOX_HEIGHT);
+
         //Fill out the boxNeighbours array
         box->boxNeighbours.push_back(box->north);
+        box->boxNeighbours.push_back(box->northEast);
         box->boxNeighbours.push_back(box->east);
+        box->boxNeighbours.push_back(box->southEast);
         box->boxNeighbours.push_back(box->south);
+        box->boxNeighbours.push_back(box->southWest);
         box->boxNeighbours.push_back(box->west);
+        box->boxNeighbours.push_back(box->northWest);
     }
 }
 
@@ -149,7 +164,6 @@ int Scene::FindMidpoint(int originX, int originY)
     return midpoint;
 }
 
-
 int Scene::FindCurrentBoxFromCoord(int x, int y)
 {
     if (x > WINDOW_WIDTH || x < 0 || y > WINDOW_HEIGHT || y < 0)
@@ -174,62 +188,107 @@ int Scene::FindCurrentBoxFromCoord(int x, int y)
     
 }
 
+scene_box* Scene::GetBoxById(int id)
+{
+    if (!boxes.contains(id))
+    {
+        std::cout << "GetBoxById: invalid id: " << id << std::endl;
+        return nullptr;
+    }
+    else
+    {
+        return boxes.at(id);
+    }
+}
+
 TreeNode* Scene::FindPath(int startBoxId, int destinationBoxId)
 {
-    // TO DO:
-    // when we call FindPath I need to free the memory previously stored in pathLinkedList
-    // AND need to empty searchedBoxes
-    // Also what if start and dest are the same, handle this
+    // Handle invalid parameters
     if (startBoxId == destinationBoxId || !boxes.contains(startBoxId) || !boxes.contains(destinationBoxId))
     {
         std::cout << "Cannot create a path between these locations: " << startBoxId << " and " << destinationBoxId << std::endl;
         return nullptr;
     }
 
+    if (boxes.at(destinationBoxId)->walkable_status == walkable::NOT_WALKABLE)
+    {
+        std::cout << "Entered a non-walkable destination" << std::endl;
+        return nullptr;
+    }
+
+    // If a path already exists delete it
     if (pathLinkedList != nullptr)
     {
         pathLinkedList->DeleteTree();
     }
 
+    // Clear searched boxes
+    if (searchedBoxes.size() != 0)
+    {
+        searchedBoxes.clear();
+    }
+
+    pathIds.clear();
+
     pathLinkedList = new Tree(startBoxId);
 
     searchedBoxes.insert(startBoxId);
     
-    scene_box* box = boxes.at(startBoxId);
+    scene_box* currentBox = boxes.at(startBoxId);
 
-    // We have our list and the first node is initialized
-    // Get the box neighbours and send that data to CreateChildren
     TreeNode* currentNode = pathLinkedList->first;
-    // Create child nodes of the first node
-    std::vector<TreeNode*> childNodes = CreateChildren(box->boxNeighbours, *currentNode);
-    // Check if any of those nodes is the destination
-    TreeNode* destination = CheckForDestination(childNodes, destinationBoxId);
-
-    if (destination != nullptr)
+    // For the first node, we can just do a simple check if any of the neighbours are the destination
+    // We don't need to be concerned about the direction etc.
+    for (int i = 0; i < currentBox->boxNeighbours.size(); i++)
     {
-        return destination;
-    }
-
-    
-    std::vector<std::vector<TreeNode*>> nodeListsToSearch = {};
-    // For each of the child nodes of our first node, create their child nodes, check for desintation, then if destination is 
-    // not found, add their child nodes to nodeListsToSearch
-    for (auto& node1 : childNodes)
-    {
-        currentNode = node1;
-        box = boxes.at(currentNode->data);
-        std::vector<TreeNode*> nodeKids = CreateChildren(box->boxNeighbours, *currentNode);
-        destination = CheckForDestination(nodeKids, destinationBoxId);
-        if (destination != nullptr)
+        if (currentBox->boxNeighbours.at(i) == destinationBoxId)
         {
-           return destination;
+            TreeNode* newNode = new TreeNode();
+            newNode->data = destinationBoxId;
+            newNode->parent = currentNode;
+            currentNode->children.push_back(newNode); 
+            CreatePathIdList(newNode);
+            return newNode; 
         }
-        nodeListsToSearch.push_back(nodeKids);
     }
 
-    // Now we can repeat a similar pattern
-    // If we get here, we haven't found the destination in the child nodes of the first node OR in their children's child nodes 
-    // eg. we haven't found them in three 'levels' of nodes
+    /** If the first box's neighbours did not contain the destination, then we start a bigger search... */
+
+    // Get the direction vector from current box to destination box 
+    scene_box* destinationBox = boxes.at(destinationBoxId);
+    vec2 vectorFromCurrentBoxToDestination = { destinationBox->originX - currentBox->originX, destinationBox->originY - currentBox->originY};
+    std::vector<BoxDotProd> orderedNeighbourBoxes = {};
+
+    // Before we search the children nodes, we need to get them into the best order for searching
+    // I'm ordering them based on how similar the direction is between the 
+    // vectors of: currentBox->destinationBox  and : currentBox->neighbourBox
+    for (int boxId : currentBox->boxNeighbours)
+    {
+        searchedBoxes.insert(boxId);
+        if (boxId != -1)
+        {
+            scene_box* neighbourBox = boxes.at(boxId);
+            if (neighbourBox->walkable_status != walkable::NOT_WALKABLE)
+            {
+                // get direction vec to each neighbour box from current box
+                vec2 vectorFromCurrentBoxToNeighbour = { neighbourBox->originX - currentBox->originX, neighbourBox->originY - currentBox->originY };
+                // then get the dot product of that vector against the vectorFromStartToDest, to see how similar they are
+                float dotProd = NormalizedVecsDotProduct(vectorFromCurrentBoxToDestination , vectorFromCurrentBoxToNeighbour);
+                BoxDotProd boxDotProd = { neighbourBox->id, dotProd };
+                orderedNeighbourBoxes.push_back(boxDotProd);
+            }
+        }       
+    }
+    std::sort(orderedNeighbourBoxes.begin(), orderedNeighbourBoxes.end());
+    // Create child nodes of the first node
+    std::vector<TreeNode*> childNodes = CreateChildren(orderedNeighbourBoxes, *currentNode);
+
+
+    // We didn't find the destination node in the child nodes of the first nodes
+    // So now we search the child nodes of the child nodes and so on, until we reach destination node
+    std::vector<std::vector<TreeNode*>> nodeListsToSearch = {};
+    nodeListsToSearch.push_back(childNodes);
+    TreeNode* destination = nullptr;
     while (destination == nullptr)
     {
         // Make a second list holding vectors of child nodes
@@ -242,13 +301,37 @@ TreeNode* Scene::FindPath(int startBoxId, int destinationBoxId)
             for (auto& node1 : list)
             {
                 currentNode = node1;
-                box = boxes.at(currentNode->data);
+                currentBox = boxes.at(currentNode->data);
+                std::vector<BoxDotProd> orderedNeighbourBoxes = {};
+                for (int boxId : currentBox->boxNeighbours)
+                {
+                    auto searched = searchedBoxes.insert(boxId);
+                    if (boxId != -1 && searched.second)
+                    {
+                        scene_box* neighbourBox = boxes.at(boxId);
+                        if (neighbourBox->walkable_status != walkable::NOT_WALKABLE)
+                        {
+                            vectorFromCurrentBoxToDestination = { destinationBox->originX - currentBox->originX, destinationBox->originY - currentBox->originY};
+                        
+                            // get direction vec to each neighbour box from current box
+                            vec2 vectorFromCurrentBoxToNeighbour = { neighbourBox->originX - currentBox->originX, neighbourBox->originY - currentBox->originY };
+                            // then get the dot product of that vector against the vectorFromStartToDest, to see how similar they are
+                            float dotProd = NormalizedVecsDotProduct(vectorFromCurrentBoxToDestination, vectorFromCurrentBoxToNeighbour);
+                            BoxDotProd boxDotProd = { neighbourBox->id, dotProd };
+                            orderedNeighbourBoxes.push_back(boxDotProd);
+                        }  
+                    }       
+                }
+                // sort the boxes by largest dot product first
+                std::sort(orderedNeighbourBoxes.begin(), orderedNeighbourBoxes.end());
+
                 // Create the node's children nodes
-                std::vector<TreeNode*> nodeKids = CreateChildren(box->boxNeighbours, *currentNode);
+                std::vector<TreeNode*> nodeKids = CreateChildren(orderedNeighbourBoxes, *currentNode);
                 // Check if the destination is in it's children nodes
                 destination = CheckForDestination(nodeKids, destinationBoxId);
                 if (destination != nullptr)
                 {
+                    CreatePathIdList(destination);
                     return destination;
                 }
                 // Add it's child nodes to our second list of lists to search
@@ -265,18 +348,35 @@ TreeNode* Scene::FindPath(int startBoxId, int destinationBoxId)
 
         
     }
+    CreatePathIdList(destination);
     return destination;
 }
 
-std::vector<TreeNode*> Scene::CreateChildren(std::vector<int> childrenData, TreeNode& currentNode)
+void Scene::CreatePathIdList(TreeNode* destination)
 {
-    for (int data : childrenData) 
+    TreeNode* currentNode = destination;
+    if (currentNode != nullptr)
     {
-        auto searched = searchedBoxes.insert(data);
-        if (data >= 0 && searched.second)
+        while(currentNode->parent != nullptr)
+        {
+            pathIds.push_back(currentNode->data);
+            currentNode = currentNode->parent;
+        }
+        pathIds.push_back(currentNode->data);
+
+    }
+
+}
+
+std::vector<TreeNode*> Scene::CreateChildren(std::vector<BoxDotProd> boxNeighbours, TreeNode& currentNode)
+{
+    for (BoxDotProd data : boxNeighbours) 
+    {
+        //auto searched = searchedBoxes.insert(data.boxId);
+        if (data.boxId >= 0)
         {
             TreeNode* newNode = new TreeNode();
-            newNode->data = data;
+            newNode->data = data.boxId;
             newNode->parent = &currentNode;
             //currentNode.children.emplace(newNode);
             currentNode.children.push_back(newNode);
@@ -295,5 +395,16 @@ TreeNode* Scene::CheckForDestination(std::vector<TreeNode*>& nodes, int desintat
         }
     }
     return nullptr;
+}
+
+void Scene::NonWalkableBoxes(std::vector<int> boxIds)
+{
+    for (int id : boxIds)
+    {
+        if (boxes.contains(id))
+        {
+            boxes.at(id)->walkable_status = walkable::NOT_WALKABLE;
+        }
+    }
 }
 

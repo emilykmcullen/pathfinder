@@ -1,6 +1,15 @@
+#pragma once
+
 #include <stdio.h>
 #include <vector>
 #include <unordered_set>
+#include <iostream>
+
+typedef struct vec2
+{
+    float x;
+    float y;
+} vec2;
 
 
 typedef struct TreeNode 
@@ -9,6 +18,8 @@ typedef struct TreeNode
     std::vector<TreeNode*> children;
     int data = -1;
 } TreeNode;
+
+extern float NormalizedVecsDotProduct(vec2 vecA, vec2 vecB);
 
 class Tree
 {

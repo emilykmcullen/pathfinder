@@ -5,6 +5,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include "Scene.h"
+#include "Player.h"
 
 
 class Game {
@@ -12,6 +13,7 @@ class Game {
         bool isRunning;
         SDL_Window *window;
         Scene* my_scene;
+        Player my_player;
         
         //for boxes
         // TO DO: tidy these up elsewhere

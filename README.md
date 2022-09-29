@@ -56,3 +56,15 @@ Over the next few days I want to:
 * Decided I'm going to keep going with my own pathfinder (instead of implementing a better way such as A*) for now, as it'll be a useful exercise - until at some point it's too slow or whatever and I need to implement a better way
 * Cleaned up a little (moved some of the code from Utils to Scene, renamed some things)
 * Had a quick go at deleting the tree nodes before dinner, seems to work for what I've tested so far but need to look into it/test more
+
+### :hedgehog: Day 6 (28th Sept) :hedgehog:
+* Scrapped the changes I made the other day as I realised there is no need for them and they make things more complicated
+* Changed pathfinder to search boxes based on direction 
+* It's working better 
+* I'm going on holiday tomorrow and I really wanted to visualize the pathfinder working so I quickly wrote some code to visualize a player moving around, which works and is nice to see :D buuuut this code is HORRENDOUS and full of potential bug cases and so first thing when I'm back off holiday I'll just be cleaning everything up
+* My main goal before I went on holiday was to write some kind of pathfinder and visualize a player moving around this path, so I've achieved that!
+
+**Next Steps**
+When I'm back off holiday in around 10 days:
+* CLEAN UP!!!!!! 
+

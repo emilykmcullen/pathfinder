@@ -50,31 +50,32 @@ void Game::Initialize(int width, int height) {
     color_buffer = (uint32_t*)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH, WINDOW_HEIGHT);
     my_scene = new Scene("emily sceene");
-    
+    std::vector<int> nonwalkboxes = { 70, 71, 73, 74, 75, 76, 77, 79};
+    my_scene->NonWalkableBoxes(nonwalkboxes);
     
 
     //my_scene->PrintBoxInfo();
-    Test();
+    //Test();
 
     return;
 }
 
-void Game::Test()
-{
-    TreeNode* currentNode = my_scene->FindPath(4, 11);
-    if (currentNode != nullptr)
-    {
-        while(currentNode->parent != nullptr)
-        {
-            std::cout << currentNode->data << std::endl;
-            currentNode = currentNode->parent;
-        }
-        std::cout << currentNode->data << std::endl;
-    }
+// void Game::Test()
+// {
+//     TreeNode* currentNode = my_scene->FindPath(4, 11);
+//     if (currentNode != nullptr)
+//     {
+//         while(currentNode->parent != nullptr)
+//         {
+//             std::cout << currentNode->data << std::endl;
+//             currentNode = currentNode->parent;
+//         }
+//         std::cout << currentNode->data << std::endl;
+//     }
 
-    my_scene->DeletePath();
+//     my_scene->DeletePath();
 
-}
+// }
 
 //for boxes
 void Game::RenderColorBuffer()
@@ -96,13 +97,31 @@ void Game::DrawRect(int x, int y, int width, int height, uint32_t color) {
 
 void Game::DrawSceneBoxes()
 {
-    uint32_t colour = 0xDDFFFFFF;
+    uint32_t colour = 0xDDDDFFFF;
     for (int i = 0; i < BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN; i++)
     {
         scene_box* box = my_scene->boxes.at(i);
         DrawRect(box->originX, box->originY, BOX_WIDTH, BOX_HEIGHT, colour);
         colour = (uint32_t) ((float)colour / 1.2f);
     }
+
+    //temporary for testing
+    uint32_t playerBox = 0x00FFFFFF;
+    DrawRect(my_player.m_position.x, my_player.m_position.y, BOX_WIDTH/10, BOX_HEIGHT/10, playerBox);
+
+    //colour obstacles, temporary for testing
+    for (int i = 0; i < BOXES_PER_ROW_AND_COLUMN * BOXES_PER_ROW_AND_COLUMN; i++)
+    {
+        scene_box* box = my_scene->GetBoxById(i);
+        if (box->walkable_status == walkable::NOT_WALKABLE)
+        {
+            uint32_t obstaclecolour = 0x00FF0000;
+            DrawRect(box->originX, box->originY, BOX_WIDTH, BOX_HEIGHT, obstaclecolour);
+        }
+
+
+    }
+
 }
 
 void Game::ClearColorBuffer(uint32_t color)
@@ -136,7 +155,23 @@ void Game::ProcessInput(){
         }
         case SDL_MOUSEBUTTONDOWN: 
         {
-            my_scene->FindCurrentBoxFromCoord(event.button.x, event.button.y);
+            int destBoxId = my_scene->FindCurrentBoxFromCoord(event.button.x, event.button.y);
+            // Find path between player's current box and dest box
+            // Set path on player
+            // Set first destination coords by looking up box by id 
+            // FindPath returns the end node, need to go up by parent and convert to a list of some sort.
+            my_player.m_pathByBoxId.clear();
+            int currentPlayerBox = my_scene->FindCurrentBoxFromCoord(my_player.m_position.x, my_player.m_position.y);
+
+            
+            my_scene->FindPath(currentPlayerBox, destBoxId);
+            my_player.m_pathByBoxId = my_scene->pathIds;
+            my_player.m_playerReachedFinalDestination = false;
+            int length = my_player.m_pathByBoxId.size();
+            scene_box* firstbox = my_scene->GetBoxById(my_player.m_pathByBoxId.at(length-1));
+            std::cout << "First box: " << my_player.m_pathByBoxId.at(length-1) << std::endl;
+            my_player.m_destination = { firstbox->originX, firstbox->originY};
+
         }
         default: {
             break;
@@ -159,6 +194,43 @@ void Game::Update(){
 
     //Clamp deltaTime to a maximum value
     deltaTime = (deltaTime > 0.05f) ? 0.05f : deltaTime;
+
+
+    //IF PLAYER HASN'T REACHED DESTINATION box,MOVE THE PLAYER TOWARD DESTINATION,
+    //if they reach the desination box
+    // look up the next node in the player path (until the node has empty children)
+    // look up the next desination box by id
+    // set the player destination coords as that boxes origins
+    // move player to those coords
+    // when we reached end of path update player has reachedfinaldest to true;
+    if (!my_player.m_playerReachedFinalDestination)
+    {
+        int length = my_player.m_pathByBoxId.size();
+        if (!my_player.PlayerHasReachedBoxDestination())
+        {
+            my_player.MovePlayer(200, my_player.m_destination, deltaTime);
+        }
+        else if (length == 1)
+        {
+            my_player.m_playerReachedFinalDestination = true;
+            std::cout << "PLAYER REACHED FINAL DESTINATION" << std::endl;
+        }
+        else
+        {
+            // It hasn't reached the final destination, but it has reached the next box in it's path
+            // So we need to advance to the next box in the path
+            
+            my_player.m_pathByBoxId.pop_back();
+            int length = my_player.m_pathByBoxId.size();
+            scene_box* nextbox = my_scene->GetBoxById(my_player.m_pathByBoxId.at(length-1));
+            std::cout << "SWITCHING TO NEXT BOX: " << my_player.m_pathByBoxId.at(length-1) <<  std::endl;
+            my_player.m_destination = { nextbox->originX, nextbox->originY };
+            std::cout << my_player.m_destination.x << ", " << my_player.m_destination.y << std::endl;
+            my_player.MovePlayer(200, my_player.m_destination, deltaTime);
+        }
+
+    }
+    
 
 
     //Sets the new ticks for the current frame to be used in the next pass

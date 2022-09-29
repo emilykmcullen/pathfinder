@@ -12,8 +12,8 @@ const unsigned int FRAME_TARGET_TIME = 1000/FPS;
 //BOXES
 
 // MAKE SURE THAT WINDOW_WIDTH AND WINDOW_HEIGHT CAN BE DIVIDED BY THIS INTO WHOLE NUMBERS OR .5 OF A NUMBER
-const unsigned int BOXES_PER_ROW_AND_COLUMN = 4; 
-const unsigned int BOX_PADDING = 1;
+const unsigned int BOXES_PER_ROW_AND_COLUMN = 10; 
+const unsigned int BOX_PADDING = 0;
 const float BOX_WIDTH = WINDOW_WIDTH / BOXES_PER_ROW_AND_COLUMN;
 const float BOX_HEIGHT = WINDOW_HEIGHT / BOXES_PER_ROW_AND_COLUMN;
 // value used to create a 'midpoint key', it's based on the window_height, so if window_height is a 3 digit number, then should be 1000
