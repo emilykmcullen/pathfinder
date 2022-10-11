@@ -1,6 +1,6 @@
 # :worm: cute-game diary :worm:
 ### Description
-I'm making a little game using C++ and SDL in my spare time (weekends and evenings after work), this is a sort of diary/log of things I add to it.
+I'm making a little game using C++ and SDL in my spare time, this is a sort of diary/log of things I add to it. The main purpose of this project is just to experiment with things for the sake of learning and not be precious about anything I'm doing (it can all be thrown away!). 
 
 
 ### :hedgehog: Day 1 - 3 (21st - 23rd Sept) :hedgehog:
