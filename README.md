@@ -1,6 +1,6 @@
 # :worm: cute-game diary :worm:
 ### Description
-I'm making a little game using C++ and SDL in my spare time, this is a sort of diary/log of things I add to it. The main purpose of this project is just to experiment with things for the sake of learning and not be precious about anything I'm doing (it can all be thrown away!). 
+I originally started this project as a small game projet, but then got distracted by the idea of just trying to write a pathfinder. I had never written a pathfinder before and decided to see what would happen if I tried to write one without looking up the best ways to do it, so the result is a very naive pathfinder but I learnt alot by doing this. When I started it, I started a little log of what I was doing in the README so I'll leave that here...
 
 
 ### :hedgehog: Day 1 - 3 (21st - 23rd Sept) :hedgehog:
@@ -67,4 +67,5 @@ Over the next few days I want to:
 **Next Steps**
 When I'm back off holiday in around 10 days:
 * CLEAN UP!!!!!! 
+
 
