@@ -1,4 +1,4 @@
-# :worm: cute-game diary :worm:
+# :worm: Pathfinder log :worm:
 ### Description
 I originally started this project as a small game projet, but then got distracted by the idea of just trying to write a pathfinder. I had never written a pathfinder before and decided to see what would happen if I tried to write one without looking up the best ways to do it, so the result is a very naive pathfinder but I learnt alot by doing this. When I started it, I started a little log of what I was doing in the README so I'll leave that here...
 
